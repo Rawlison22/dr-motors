@@ -6,9 +6,16 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-const MAPS_LINK = 'https://maps.app.goo.gl/jV4Pj3RnmuiubyxB9';
-const MAP_EMBED_URL =
-  'https://www.google.com/maps?q=-7.1589043,-34.8964214&z=16&output=embed';
+const LOCATIONS = [
+  {
+    name: 'Oitizeiro',
+    href: 'https://maps.app.goo.gl/jV4Pj3RnmuiubyxB9',
+  },
+  {
+    name: 'Conde',
+    href: 'https://maps.google.com/maps/search/DR%20MOTORS%20SHINERAY%20CONDE-PB/@-7.2608,-34.9078,17z?hl=pt-BR/',
+  },
+];
 
 type LocationPopoverProps = {
   variant: 'header' | 'footer';
@@ -49,7 +56,7 @@ export function LocationPopover({ variant }: LocationPopoverProps) {
         <button
           type="button"
           className={`location-trigger location-trigger--${variant}`}
-          aria-label="Ver localização da DR Motors no Google Maps"
+          aria-label="Escolher localização da DR Motors"
           aria-haspopup="dialog"
           aria-expanded={open}
           onMouseEnter={openOnHover}
@@ -58,7 +65,7 @@ export function LocationPopover({ variant }: LocationPopoverProps) {
           data-testid={`button-location-${variant}`}
         >
           <MapPin size={15} strokeWidth={1.8} />
-          <span>{isHeader ? 'João Pessoa, PB' : 'Oitizeiro e Conde'}</span>
+          <span>Oitizeiro e Conde</span>
         </button>
       </PopoverTrigger>
       <PopoverContent
@@ -71,25 +78,28 @@ export function LocationPopover({ variant }: LocationPopoverProps) {
       >
         <div className="location-popover-heading">
           <div>
-            <strong>DR Motors</strong>
-            <span>Revendedora Oficial Shineray · João Pessoa, PB</span>
+            <strong>Escolha uma unidade</strong>
+            <span>Selecione a localização para abrir no Google Maps.</span>
           </div>
         </div>
-        <iframe
-          className="location-map"
-          title="Mapa da localização da DR Motors em João Pessoa"
-          src={MAP_EMBED_URL}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-        />
-        <a
-          className="location-map-link"
-          href={MAPS_LINK}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Abrir no Google Maps <ArrowUpRight size={15} />
-        </a>
+        <div className="location-option-list">
+          {LOCATIONS.map(({ name, href }) => (
+            <a
+              key={name}
+              className="location-option"
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MapPin size={16} strokeWidth={1.8} />
+              <span className="location-option-copy">
+                <strong>{name}</strong>
+                <small>Ver localização no Google Maps</small>
+              </span>
+              <ArrowUpRight size={15} />
+            </a>
+          ))}
+        </div>
       </PopoverContent>
     </Popover>
   );
