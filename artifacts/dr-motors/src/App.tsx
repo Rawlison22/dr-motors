@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { ArrowDown, ArrowUpRight, MapPin, MessageCircle, MoveRight } from 'lucide-react';
-import drMotorsLogo from '@assets/Logotipo_DR_Motors_com_Asas_Laranja_1794322408498.png';
+import drMotorsLogo from '@assets/dr-motors-logo-transparente_1794323280971.png';
 import {
   Route,
   Switch,

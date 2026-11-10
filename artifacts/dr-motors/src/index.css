@@ -452,7 +452,7 @@ a { color: inherit; }
 .site-shell { min-height: 100dvh; overflow: clip; }
 .site-header { height: 76px; position: sticky; z-index: 20; top: 0; background: rgba(25,27,30,.97); color: #f5f1e9; border-bottom: 1px solid rgba(255,255,255,.1); }
 .header-inner { max-width: 1320px; height: 100%; margin: 0 auto; padding: 0 48px; display: flex; align-items: center; justify-content: space-between; }
-.brand { text-decoration: none; display: inline-flex; align-items: center; gap: 0; padding: 0 4px; background: var(--paper-bright); border-radius: 2px; }
+.brand { text-decoration: none; display: inline-flex; align-items: center; gap: 0; }
 .brand-logo { display: block; width: 148px; height: 74px; max-width: 42vw; object-fit: contain; }
 .brand-mark { width: 42px; height: 42px; display: grid; place-items: center; color: #fbf6eb; background: var(--red); font: 700 17px/1 'Space Grotesk', sans-serif; letter-spacing: -1px; transform: skew(-7deg); }
 .brand-mark span { color: #f5c84f; }
