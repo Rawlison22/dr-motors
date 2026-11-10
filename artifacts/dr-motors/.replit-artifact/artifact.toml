@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "DR Motors | Shineray"
+description = "A Portuguese-language Shineray motorcycle catalog for DR Motors customers in João Pessoa and Conde, with model specifications, engine-size filters, and direct WhatsApp inquiries."
+version = "1.0.0"
+id = "artifacts/dr-motors"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24100
+
+[services.development]
+run = "pnpm --filter @workspace/dr-motors run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/dr-motors", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/dr-motors/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24100"
+BASE_PATH = "/"
