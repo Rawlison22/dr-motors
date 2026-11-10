@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, MapPin } from 'lucide-react';
 import {
   Popover,
@@ -22,46 +21,16 @@ type LocationPopoverProps = {
 };
 
 export function LocationPopover({ variant }: LocationPopoverProps) {
-  const [open, setOpen] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isHeader = variant === 'header';
 
-  const cancelClose = () => {
-    if (closeTimer.current) {
-      clearTimeout(closeTimer.current);
-      closeTimer.current = null;
-    }
-  };
-
-  const openOnHover = () => {
-    cancelClose();
-    setOpen(true);
-  };
-
-  const closeAfterHover = () => {
-    cancelClose();
-    closeTimer.current = setTimeout(() => setOpen(false), 180);
-  };
-
-  useEffect(
-    () => () => {
-      if (closeTimer.current) clearTimeout(closeTimer.current);
-    },
-    [],
-  );
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover>
       <PopoverTrigger asChild>
         <button
           type="button"
           className={`location-trigger location-trigger--${variant}`}
           aria-label="Escolher localização da DR Motors"
           aria-haspopup="dialog"
-          aria-expanded={open}
-          onMouseEnter={openOnHover}
-          onMouseLeave={closeAfterHover}
-          onFocus={openOnHover}
           data-testid={`button-location-${variant}`}
         >
           <MapPin size={15} strokeWidth={1.8} />
@@ -73,8 +42,6 @@ export function LocationPopover({ variant }: LocationPopoverProps) {
         align={isHeader ? 'end' : 'start'}
         side="bottom"
         sideOffset={8}
-        onMouseEnter={openOnHover}
-        onMouseLeave={closeAfterHover}
       >
         <div className="location-popover-heading">
           <div>
