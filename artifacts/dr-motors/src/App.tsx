@@ -3,8 +3,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { InquiryDialog } from '@/components/inquiry-dialog';
+import { LocationPopover } from '@/components/location-popover';
 import NotFound from '@/pages/not-found';
-import { ArrowDown, ArrowUpRight, MapPin, MessageCircle, MoveRight } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, MessageCircle, MoveRight } from 'lucide-react';
 import drMotorsLogo from '@assets/dr-motors-logo-transparente_1794323280971.png';
 import {
   Route,
@@ -17,6 +19,8 @@ const queryClient = new QueryClient();
 
 function Home() {
   const [filter, setFilter] = useState('all');
+  const [inquiryOpen, setInquiryOpen] = useState(false);
+  const [inquiryModel, setInquiryModel] = useState<string | undefined>();
   const filters = [
     { id: 'all', label: 'Todas' },
     { id: '50', label: '50cc' },
@@ -40,7 +44,11 @@ function Home() {
     () => filter === 'all' ? motorcycles : motorcycles.filter((motorcycle) => motorcycle.segment === filter),
     [filter],
   );
-  const whatsappUrl = (model?: string) => `https://wa.me/5583993499317${model ? `?text=${encodeURIComponent(`Olá! Tenho interesse na ${model}`)}` : ''}`;
+  const openInquiry = (model?: string) => {
+    setInquiryModel(model);
+    setInquiryOpen(true);
+  };
+  const modelNames = motorcycles.map((motorcycle) => motorcycle.name);
 
   return (
     <div className="site-shell">
@@ -49,10 +57,10 @@ function Home() {
           <a className="brand" href="#inicio" aria-label="DR Motors, início">
             <img className="brand-logo" src={drMotorsLogo} alt="DR Motors — A sua melhor escolha" />
           </a>
-          <div className="header-location"><MapPin size={15} strokeWidth={1.8} /><span>João Pessoa, PB</span></div>
-          <a className="header-contact" href={whatsappUrl()} target="_blank" rel="noreferrer" data-testid="link-whatsapp-header">
+          <LocationPopover variant="header" />
+          <button className="header-contact" type="button" onClick={() => openInquiry()} data-testid="button-whatsapp-header">
             <MessageCircle size={17} /> <span>Fale com a loja</span><ArrowUpRight size={15} />
-          </a>
+          </button>
         </div>
       </header>
 
@@ -117,9 +125,9 @@ function Home() {
                   <dl className="spec-list">
                     {motorcycle.specs.map(([label, value]) => <div className="spec-row" key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
                   </dl>
-                  <a className="inquiry-link" href={whatsappUrl(motorcycle.name)} target="_blank" rel="noreferrer" data-testid={`link-inquire-${motorcycle.name.toLowerCase().replaceAll(' ', '-')}`}>
+                  <button className="inquiry-link" type="button" onClick={() => openInquiry(motorcycle.name)} data-testid={`button-inquire-${motorcycle.name.toLowerCase().replaceAll(' ', '-')}`}>
                     <MessageCircle size={17} /><span>Consultar este modelo</span><MoveRight size={17} />
-                  </a>
+                  </button>
                 </div>
               </article>
             ))}
@@ -131,16 +139,22 @@ function Home() {
 
       <footer className="site-footer">
         <div className="footer-main">
-          <div className="footer-brand"><span className="brand-mark">DR<span>.</span></span><div><strong>DR Motors</strong><small>A sua melhor escolha</small></div></div>
-          <div className="footer-message"><p className="eyebrow"><span className="eyebrow-line" /> Atendimento local</p><h2>Vamos conversar<br />sobre sua próxima moto?</h2></div>
-          <a className="footer-contact" href={whatsappUrl()} target="_blank" rel="noreferrer" data-testid="link-footer-whatsapp"><MessageCircle size={18} /><span>Falar no WhatsApp</span><ArrowUpRight size={16} /></a>
+          <div className="footer-brand"><img className="footer-brand-logo" src={drMotorsLogo} alt="DR Motors — A sua melhor escolha" /></div>
+          <div className="footer-message"><p className="eyebrow"><span className="eyebrow-line" /> Atendimento Local e Online</p><h2>Vamos conversar<br />sobre sua próxima moto?</h2></div>
+          <button className="footer-contact" type="button" onClick={() => openInquiry()} data-testid="button-footer-whatsapp"><MessageCircle size={18} /><span>Falar no WhatsApp</span><ArrowUpRight size={16} /></button>
         </div>
         <div className="footer-details">
           <p><strong>DR Motors — A sua melhor escolha</strong><span>Concessionária autorizada Shineray • João Pessoa / PB</span></p>
-          <p><MapPin size={15} /><span>Oitizeiro e Conde</span></p>
+          <LocationPopover variant="footer" />
           <span className="footer-legal">© DR Motors · Shineray</span>
         </div>
       </footer>
+      <InquiryDialog
+        open={inquiryOpen}
+        initialModel={inquiryModel}
+        models={modelNames}
+        onOpenChange={setInquiryOpen}
+      />
     </div>
   );
 }
