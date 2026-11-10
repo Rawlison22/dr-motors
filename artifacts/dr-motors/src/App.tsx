@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { ArrowDown, ArrowUpRight, MapPin, MessageCircle, MoveRight } from 'lucide-react';
+import drMotorsLogo from '@assets/Logotipo_DR_Motors_com_Asas_Laranja_1794322408498.png';
 import {
   Route,
   Switch,
@@ -46,8 +47,7 @@ function Home() {
       <header className="site-header">
         <div className="header-inner">
           <a className="brand" href="#inicio" aria-label="DR Motors, início">
-            <span className="brand-mark">DR<span>.</span></span>
-            <span className="brand-copy"><strong>DR Motors</strong><small>A sua melhor escolha</small></span>
+            <img className="brand-logo" src={drMotorsLogo} alt="DR Motors — A sua melhor escolha" />
           </a>
           <div className="header-location"><MapPin size={15} strokeWidth={1.8} /><span>João Pessoa, PB</span></div>
           <a className="header-contact" href={whatsappUrl()} target="_blank" rel="noreferrer" data-testid="link-whatsapp-header">
