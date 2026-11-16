@@ -36,11 +36,16 @@ const paymentOptions = [
     label: 'À vista',
     description: 'Consultar condições',
   },
+  {
+    value: 'talk_to_store',
+    label: 'Falar direto com a loja',
+    description: 'Sem preencher dados',
+  },
 ] as const;
 
 const inquirySchema = z
   .object({
-    paymentMethod: z.enum(['financing', 'credit_card', 'cash']).optional(),
+    paymentMethod: z.enum(['financing', 'credit_card', 'cash', 'talk_to_store']).optional(),
     model: z.string(),
     name: z.string(),
     cpf: z.string(),
@@ -56,6 +61,12 @@ const inquirySchema = z
         path: ['paymentMethod'],
         message: 'Selecione a forma de pagamento.',
       });
+      return;
+    }
+
+    // Se for "Falar direto com a loja", não exige mais nada
+    if (values.paymentMethod === 'talk_to_store') {
+      return;
     }
 
     if (!values.model) {
@@ -178,8 +189,11 @@ export function InquiryDialog({
       ].join('\n');
     } else if (values.paymentMethod === 'credit_card') {
       message = `Olá! Vi no catálogo da DR Motors e tenho interesse na ${model}. Gostaria de me informar sobre as condições para pagamento no cartão de crédito.`;
-    } else {
+    } else if (values.paymentMethod === 'cash') {
       message = `Olá! Vi no catálogo da DR Motors e tenho interesse na ${model}. Gostaria de consultar as condições para pagamento à vista.`;
+    } else {
+      // talk_to_store
+      message = `Olá! Gostaria de falar diretamente com a loja DR Motors.`;
     }
 
     const whatsappLink = document.createElement('a');
@@ -269,30 +283,32 @@ export function InquiryDialog({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="model"
-              render={({ field }) => (
-                <FormItem className="inquiry-field">
-                  <FormLabel className="inquiry-label">Modelo da moto</FormLabel>
-                  <FormControl>
-                    <select
-                      className="inquiry-input"
-                      {...field}
-                      data-testid="select-inquiry-model"
-                    >
-                      <option value="">Selecione um modelo</option>
-                      {models.map((model) => (
-                        <option value={model} key={model}>
-                          {model}
-                        </option>
-                      ))}
-                    </select>
-                  </FormControl>
-                  <FormMessage className="inquiry-error" />
-                </FormItem>
-              )}
-            />
+            {paymentMethod !== 'talk_to_store' && (
+              <FormField
+                control={form.control}
+                name="model"
+                render={({ field }) => (
+                  <FormItem className="inquiry-field">
+                    <FormLabel className="inquiry-label">Modelo da moto</FormLabel>
+                    <FormControl>
+                      <select
+                        className="inquiry-input"
+                        {...field}
+                        data-testid="select-inquiry-model"
+                      >
+                        <option value="">Selecione um modelo</option>
+                        {models.map((model) => (
+                          <option value={model} key={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </FormControl>
+                    <FormMessage className="inquiry-error" />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {paymentMethod === 'financing' && (
               <section className="financing-fields" aria-labelledby="financing-heading">
@@ -430,8 +446,7 @@ export function InquiryDialog({
                         />
                       </FormControl>
                       <FormLabel className="consent-copy">
-                        Autorizo o envio destes dados à DR Motors pelo WhatsApp para
-                        esta simulação.
+                        Autorizo a DR Motors, enviar os meus dados para simulação e análise de crédito junto aos bancos disponíveis.
                       </FormLabel>
                       <FormMessage className="inquiry-error" />
                     </FormItem>
@@ -444,7 +459,7 @@ export function InquiryDialog({
               </section>
             )}
 
-            {paymentMethod && paymentMethod !== 'financing' && (
+            {paymentMethod && paymentMethod !== 'financing' && paymentMethod !== 'talk_to_store' && (
               <p className="payment-note">
                 Sua mensagem será preparada com o modelo e a forma de pagamento
                 selecionados.
@@ -460,7 +475,9 @@ export function InquiryDialog({
               <span>
                 {paymentMethod === 'financing'
                   ? 'Enviar dados para simulação'
-                  : 'Continuar para o WhatsApp'}
+                  : paymentMethod === 'talk_to_store'
+                    ? 'Falar com a loja no WhatsApp'
+                    : 'Continuar para o WhatsApp'}
               </span>
             </button>
           </form>

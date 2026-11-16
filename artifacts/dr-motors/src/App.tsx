@@ -6,7 +6,11 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { InquiryDialog } from '@/components/inquiry-dialog';
 import { LocationPopover } from '@/components/location-popover';
 import NotFound from '@/pages/not-found';
-import { ArrowDown, ArrowUpRight, MessageCircle, MoveRight } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, Images, MessageCircle, MoveRight } from 'lucide-react';
+import { MediaGallery } from '@/components/media-gallery';
+import { MotorcycleCardMedia } from '@/components/motorcycle-card-media';
+import { HeroShowcase } from '@/components/hero-showcase';
+import { modelMedia } from '@/lib/media';
 import drMotorsLogo from '@assets/dr-motors-logo-transparente_1794323280971.png';
 import {
   Route,
@@ -21,6 +25,7 @@ function Home() {
   const [filter, setFilter] = useState('all');
   const [inquiryOpen, setInquiryOpen] = useState(false);
   const [inquiryModel, setInquiryModel] = useState<string | undefined>();
+  const [galleryModel, setGalleryModel] = useState<string | null>(null);
   const filters = [
     { id: 'all', label: 'Todas' },
     { id: '50', label: '50cc' },
@@ -73,10 +78,10 @@ function Home() {
               <p className="hero-description">Conheça nossa linha completa de motos Shineray. Compare os modelos e encontre o que combina com o seu ritmo.</p>
               <a className="hero-cta" href="#catalogo">Explorar modelos <ArrowDown size={17} /></a>
             </div>
-            <div className="hero-art" aria-label="Painel gráfico abstrato de cilindrada, sem fotografia do produto" role="img">
+            <div className="hero-art" aria-label="Motos Shineray em destaque" role="img">
               <div className="hero-art-top"><span>DR MOTORS / SHINERAY</span><span>PB · BRASIL</span></div>
               <div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="orbit orbit-three" />
-              <div className="hero-art-center"><span className="hero-art-kicker">ESCOLHA SUA</span><span className="hero-art-number">MOTO<span>.</span></span><span className="hero-art-caption">Liberdade em cada trajeto</span></div>
+              <HeroShowcase />
               <div className="hero-art-vertical">CATÁLOGO 2026</div>
               <div className="hero-art-bottom"><span>01 — 09</span><span>LINHA COMPLETA</span></div>
               <span className="art-cross cross-a" /><span className="art-cross cross-b" />
@@ -110,13 +115,25 @@ function Home() {
           <div className="motorcycle-grid" aria-live="polite">
             {visibleMotorcycles.map((motorcycle, index) => (
               <article className="motorcycle-card" key={motorcycle.name} data-testid={`card-model-${motorcycle.name.toLowerCase().replaceAll(' ', '-')}`}>
-                <div className="card-visual">
+                <div className={`card-visual${modelMedia[motorcycle.name] ? ' has-photo' : ''}`}>
                   <div className="visual-head"><span>{motorcycle.type ?? 'Ciclomotor'}</span><span className="visual-index">{String(index + 1).padStart(2, '0')} / {String(visibleMotorcycles.length).padStart(2, '0')}</span></div>
-                  <div className="visual-graphic" aria-hidden="true">
-                    <span className="graphic-ring ring-large" /><span className="graphic-ring ring-small" />
-                    <span className="graphic-axis" /><span className="graphic-label">{motorcycle.segment}<i>cc</i></span>
-                    <span className="graphic-micro">SHINERAY · DR MOTORS</span>
-                  </div>
+                  {modelMedia[motorcycle.name] ? (
+                    <MotorcycleCardMedia
+                      coverUrl={modelMedia[motorcycle.name].cover}
+                      images={modelMedia[motorcycle.name].gallery}
+                      name={motorcycle.name}
+                      fit={modelMedia[motorcycle.name].fit}
+                      position={modelMedia[motorcycle.name].position}
+                      zoom={modelMedia[motorcycle.name].zoom}
+                      onClickGallery={() => setGalleryModel(motorcycle.name)}
+                    />
+                  ) : (
+                    <div className="visual-graphic" aria-hidden="true">
+                      <span className="graphic-ring ring-large" /><span className="graphic-ring ring-small" />
+                      <span className="graphic-axis" /><span className="graphic-label">{motorcycle.segment}<i>cc</i></span>
+                      <span className="graphic-micro">SHINERAY · DR MOTORS</span>
+                    </div>
+                  )}
                   <span className="card-category-tag">{motorcycle.category}</span>
                 </div>
                 <div className="card-content">
@@ -125,6 +142,11 @@ function Home() {
                   <dl className="spec-list">
                     {motorcycle.specs.map(([label, value]) => <div className="spec-row" key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
                   </dl>
+                  {modelMedia[motorcycle.name] && (
+                    <button className="gallery-link" type="button" onClick={() => setGalleryModel(motorcycle.name)} data-testid={`button-gallery-${motorcycle.name.toLowerCase().replaceAll(' ', '-')}`}>
+                      <Images size={16} /><span>Ver fotos e vídeo</span>
+                    </button>
+                  )}
                   <button className="inquiry-link" type="button" onClick={() => openInquiry(motorcycle.name)} data-testid={`button-inquire-${motorcycle.name.toLowerCase().replaceAll(' ', '-')}`}>
                     <MessageCircle size={17} /><span>Consultar este modelo</span><MoveRight size={17} />
                   </button>
@@ -155,14 +177,13 @@ function Home() {
         models={modelNames}
         onOpenChange={setInquiryOpen}
       />
+      <MediaGallery model={galleryModel} media={galleryModel ? modelMedia[galleryModel] : undefined} onClose={() => setGalleryModel(null)} />
     </div>
   );
 }
 
 function Router() {
   return (
-    // Keep a shared shell (sidebar, navbar) outside the boundary so it
-    // survives a page crash.
     <RoutedErrorBoundary>
       <Switch>
         <Route path="/" component={Home} />
