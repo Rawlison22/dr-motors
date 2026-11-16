@@ -19,7 +19,13 @@ import {
 } from '@/components/ui/form';
 import { MessageCircle } from 'lucide-react';
 
-const WHATSAPP_PHONE = '5583993499317';
+const WHATSAPP_PHONES = {
+  oitizeiro: '5583993499317',
+  conde: '5583993529928',
+} as const;
+
+type StoreUnit = keyof typeof WHATSAPP_PHONES;
+
 const paymentOptions = [
   {
     value: 'financing',
@@ -169,40 +175,43 @@ export function InquiryDialog({
     onOpenChange(nextOpen);
   };
 
-  const sendToWhatsApp = form.handleSubmit((values) => {
-    const model = values.model;
-    let message: string;
+  const handleSendToStore = (store: StoreUnit) => {
+    form.handleSubmit((values) => {
+      const model = values.model;
+      let message: string;
 
-    if (values.paymentMethod === 'financing') {
-      const [year, month, day] = values.birthDate.split('-');
-      message = [
-        `Olá! Vi no catálogo da DR Motors e gostei da ${model}.`,
-        'Gostaria de solicitar uma simulação de financiamento.',
-        '',
-        'DADOS PARA SIMULAÇÃO',
-        `Nome: ${values.name.trim()}`,
-        `CPF: ${values.cpf}`,
-        `Data de nascimento: ${day}/${month}/${year}`,
-        `Telefone: ${values.phone.trim()}`,
-        `Renda: ${formatIncome(parseIncome(values.income))}`,
-        `Modelo da moto: ${model}`,
-      ].join('\n');
-    } else if (values.paymentMethod === 'credit_card') {
-      message = `Olá! Vi no catálogo da DR Motors e tenho interesse na ${model}. Gostaria de me informar sobre as condições para pagamento no cartão de crédito.`;
-    } else if (values.paymentMethod === 'cash') {
-      message = `Olá! Vi no catálogo da DR Motors e tenho interesse na ${model}. Gostaria de consultar as condições para pagamento à vista.`;
-    } else {
-      // talk_to_store
-      message = `Olá! Gostaria de falar diretamente com a loja DR Motors.`;
-    }
+      if (values.paymentMethod === 'financing') {
+        const [year, month, day] = values.birthDate.split('-');
+        message = [
+          `Olá! Vi no catálogo da DR Motors e gostei da ${model}.`,
+          'Gostaria de solicitar uma simulação de financiamento.',
+          '',
+          'DADOS PARA SIMULAÇÃO',
+          `Nome: ${values.name.trim()}`,
+          `CPF: ${values.cpf}`,
+          `Data de nascimento: ${day}/${month}/${year}`,
+          `Telefone: ${values.phone.trim()}`,
+          `Renda: ${formatIncome(parseIncome(values.income))}`,
+          `Modelo da moto: ${model}`,
+        ].join('\n');
+      } else if (values.paymentMethod === 'credit_card') {
+        message = `Olá! Vi no catálogo da DR Motors e tenho interesse na ${model}. Gostaria de me informar sobre as condições para pagamento no cartão de crédito.`;
+      } else if (values.paymentMethod === 'cash') {
+        message = `Olá! Vi no catálogo da DR Motors e tenho interesse na ${model}. Gostaria de consultar as condições para pagamento à vista.`;
+      } else {
+        // talk_to_store
+        message = `Olá! Gostaria de falar diretamente com a loja DR Motors.`;
+      }
 
-    const whatsappLink = document.createElement('a');
-    whatsappLink.href = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
-    whatsappLink.target = '_blank';
-    whatsappLink.rel = 'noopener noreferrer';
-    whatsappLink.click();
-    handleOpenChange(false);
-  });
+      const targetPhone = WHATSAPP_PHONES[store];
+      const whatsappLink = document.createElement('a');
+      whatsappLink.href = `https://wa.me/${targetPhone}?text=${encodeURIComponent(message)}`;
+      whatsappLink.target = '_blank';
+      whatsappLink.rel = 'noopener noreferrer';
+      whatsappLink.click();
+      handleOpenChange(false);
+    })();
+  };
 
   const changePaymentMethod = (
     value: (typeof paymentOptions)[number]['value'],
@@ -230,14 +239,17 @@ export function InquiryDialog({
             Como podemos ajudar?
           </DialogTitle>
           <DialogDescription className="contact-dialog-description">
-            Escolha a forma de pagamento para iniciar sua conversa pelo WhatsApp.
+            Escolha a forma de pagamento e selecione a loja para iniciar sua conversa pelo WhatsApp.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
             className="inquiry-form"
-            onSubmit={sendToWhatsApp}
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleSendToStore('oitizeiro');
+            }}
             noValidate
             data-testid="form-whatsapp-inquiry"
           >
@@ -466,20 +478,27 @@ export function InquiryDialog({
               </p>
             )}
 
-            <button
-              type="submit"
-              className="inquiry-submit"
-              data-testid="button-send-whatsapp-inquiry"
-            >
-              <MessageCircle size={17} />
-              <span>
-                {paymentMethod === 'financing'
-                  ? 'Enviar dados para simulação'
-                  : paymentMethod === 'talk_to_store'
-                    ? 'Falar com a loja no WhatsApp'
-                    : 'Continuar para o WhatsApp'}
-              </span>
-            </button>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => handleSendToStore('oitizeiro')}
+                className="inquiry-submit w-full"
+                data-testid="button-send-whatsapp-oitizeiro"
+              >
+                <MessageCircle size={17} />
+                <span>Loja Oitizeiro</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSendToStore('conde')}
+                className="inquiry-submit w-full"
+                data-testid="button-send-whatsapp-conde"
+              >
+                <MessageCircle size={17} />
+                <span>Loja Conde</span>
+              </button>
+            </div>
           </form>
         </Form>
       </DialogContent>
