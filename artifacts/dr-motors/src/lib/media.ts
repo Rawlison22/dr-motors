@@ -16,6 +16,7 @@ export type ModelMedia = {
   gallery: string[];
   colors?: string[];
   video?: string;
+  poster?: string;
   position?: string;
   zoom?: number;
   fit?: 'contain' | 'cover';
@@ -111,16 +112,23 @@ const shi175: ModelMedia = {
   gallery: nums(10).map((n) => `${SH}/2026/04/Galeria-SHI-175-${n}.webp`),
 };
 
-// Página "SHI 175s EFI" (175,11 cc · 15,63 cv · 14 Nm · 5 marchas) → card "SHI 175 EFI"
+// Página "SHI 175ss" → card "SHI 175 EFI"
 const shi175sEfi: ModelMedia = {
-  page: 'https://www.shineray.com.br/produto/shi-175s-efi/',
-  cover: `${SH}/2024/05/SHI-175s-EFI-500x500-1.webp`,
-  gallery: nums(10).map((n) => `${SH}/2024/05/Galeria-SHI-175s-${n}.webp`),
+  page: 'https://www.shineray.com.br/produto/shi-175ss/',
+  cover: `${SH}/2026/09/SHI-175ss-Cores-1.webp`,
+  gallery: [
+    `${SH}/2026/09/Itens-de-Serie-SHI-175ss-1-1024x682.webp`,
+    `${SH}/2026/09/Itens-de-Serie-SHI-175ss-2-1024x682.webp`,
+    `${SH}/2026/09/Itens-de-Serie-SHI-175ss-3-1024x682.webp`,
+    `${SH}/2026/09/Itens-de-Serie-SHI-175ss-4-1024x682.webp`,
+    `${SH}/2026/09/Itens-de-Serie-SHI-175ss-5-1024x682.webp`,
+  ],
   colors: [
-    `${SH}/2026/04/Cores-SHI-175-4.webp`,
-    `${SH}/2026/04/Cores-SHI-175-1.webp`,
-    `${SH}/2024/05/Cores-SHI-175s-1.webp`,
-    `${SH}/2024/05/Cores-SHI-175s-2.webp`,
+    `${SH}/2026/09/SHI-175ss-Cores-1.webp`,
+    `${SH}/2026/09/SHI-175ss-Cores-3.webp`,
+    `${SH}/2026/09/SHI-175ss-Cores-4.webp`,
+    `${SH}/2026/09/SHI-175ss-Cores-5.webp`,
+    `${SH}/2026/09/SHI-175ss-Cores-6.webp`,
   ],
 };
 
