@@ -18,6 +18,7 @@ import {
   useLocation,
   Router as WouterRouter,
 } from 'wouter';
+import { Analytics } from '@vercel/analytics/react';
 
 const queryClient = new QueryClient();
 
@@ -206,6 +207,7 @@ function App() {
           <Router />
         </WouterRouter>
         <Toaster />
+        <Analytics />
       </TooltipProvider>
     </QueryClientProvider>
   );
